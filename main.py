@@ -55,13 +55,13 @@ def v_y(speed, heading, steering_angle):
     return speed * math.sin(heading + beta(steering_angle))
 
 
-def angular_accel(speed, steering_angle):
+def angular_velocity(speed, steering_angle):
     return speed * (math.tan(steering_angle) * math.cos(beta(steering_angle))) / CAR_LEN
 
 
 def update_car(car: CarState, gas_pos: float, steer_angle: float) -> CarState:
     speed = update_speed(car.speed, gas_pos)
-    heading_angle = car.heading_angle + angular_accel(gas_pos, steer_angle) * INTEGRATION_STEP
+    heading_angle = car.heading_angle + angular_velocity(gas_pos, steer_angle) * INTEGRATION_STEP
     vx = v_x(speed=speed, steering_angle=steer_angle, heading=heading_angle)
     vy = v_y(speed=speed, steering_angle=steer_angle, heading=heading_angle)
     x_pos = car.x_pos + vx * INTEGRATION_STEP
