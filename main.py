@@ -61,7 +61,7 @@ def angular_velocity(speed, steering_angle):
 
 def update_car(car: CarState, gas_pos: float, steer_angle: float) -> CarState:
     speed = update_speed(car.speed, gas_pos)
-    heading_angle = car.heading_angle + angular_velocity(gas_pos, steer_angle) * INTEGRATION_STEP
+    heading_angle = car.heading_angle + angular_velocity(speed, steer_angle) * INTEGRATION_STEP
     vx = v_x(speed=speed, steering_angle=steer_angle, heading=heading_angle)
     vy = v_y(speed=speed, steering_angle=steer_angle, heading=heading_angle)
     x_pos = car.x_pos + vx * INTEGRATION_STEP
@@ -98,8 +98,8 @@ def main():
 def test_data():
     car = CarState(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)  # stationary car at the origin
     for i in range(100_000):
-        car = update_car(car, gas_pos=1, steer_angle=math.pi / 2)
-        print(f"{car.x_pos}\t{car.y_pos}")
+        car = update_car(car, gas_pos=1, steer_angle=math.pi/4)
+        print(f"{car.accel_norm}")
 
 
 if __name__ == "__main__":
