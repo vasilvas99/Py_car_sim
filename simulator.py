@@ -7,13 +7,14 @@ class SimulatedCar:
     A simple (black-box) car kinematics simulator. It takes as input: 
     accelerator position (0, 1), brake position (0,1) 
     and steering angle (-pi/2, pi/2).
-    It is assumed that breaking and accelerating are two antagonistic 
-    effects that can't happend at the same time and that they 
+    It is assumed that braking and accelerating are two antagonistic 
+    effects that can't happen at the same time and that they 
     are related linearly to the acceleration 
     (this models the "jerk" when driving a car).
+    
     This assumption is then used in combination with the bicycle vehicle model 
     (see: https://thef1clan.com/2020/09/21/vehicle-dynamics-the-kinematic-bicycle-model/)
-    to propage the simulated car in 2D space. 
+    to propagate the simulated car in 2D space. 
     After each propagation step velocity and acceleration componets are calculated.
 
     Example:
