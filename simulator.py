@@ -27,6 +27,9 @@ class SimulatedCar:
     >>>     c.update_car()
     >>>     print(f"{car.position=}")
 
+    Note: steer_angle, accelerator position and brake_position can be
+    changed at any time and will affect the next call of the
+    update_car() method.
     """
 
     def __init__(
@@ -202,6 +205,11 @@ class SimulatedCar:
         self._x_pos = self._x_pos + self._v_x * self._simulation_step
         self._y_pos = self._y_pos + self._v_y * self._simulation_step
 
+    # These acceleration components (and the vector norm) would as if they were
+    # measured by an accelerometer attached to the car. This has consequences
+    # to the value (it can be higher than pre-defined max) when going around corners
+    # this can be viewed as a weakness of the model because in reality at high
+    # accelerations slip might occur
     def _update_acceleration(self):
         self._accel_x = (self._v_x - self._old_v_x) / (self._simulation_step)
         self._accel_y = (self._v_y - self._old_v_y) / (self._simulation_step)
