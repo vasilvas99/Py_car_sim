@@ -139,7 +139,7 @@ class SimulatedCar:
     def acceleration_norm(self):
         return math.sqrt(self._accel_x**2 + self._accel_y**2)
 
-    def acc_from_ctrl(self):
+    def _acc_from_ctrl(self):
         """Gas and brake are combined in a single variable 
         "control position" that can take any value in the interval [-1,1].
         An implicit assumption here is that you cannot press the gas 
@@ -180,7 +180,7 @@ class SimulatedCar:
         # linear behaviour of acceleration and drag
         new_speed = (
             self._speed
-            + (self.acc_from_ctrl() - self._drag_coef * self._speed)
+            + (self._acc_from_ctrl() - self._drag_coef * self._speed)
             * self._simulation_step
         )
         self._speed = max(0, min(new_speed, self._max_speed))
