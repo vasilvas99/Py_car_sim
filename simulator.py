@@ -4,17 +4,17 @@ from time import monotonic
 
 class SimulatedCar:
     """
-    A simple (black-box) car kinematics simulator. It takes as input: 
-    accelerator position (0, 1), brake position (0,1) 
+    A simple (black-box) car kinematics simulator. It takes as input:
+    accelerator position (0, 1), brake position (0,1)
     and steering angle (-pi/2, pi/2).
-    It is assumed that braking and accelerating are two antagonistic 
-    effects that can't happen at the same time and that they 
-    are related linearly to the acceleration 
+    It is assumed that braking and accelerating are two antagonistic
+    effects that can't happen at the same time and that they
+    are related linearly to the acceleration
     (this models the "jerk" when driving a car).
-    
-    This assumption is then used in combination with the bicycle vehicle model 
+
+    This assumption is then used in combination with the bicycle vehicle model
     (see: https://thef1clan.com/2020/09/21/vehicle-dynamics-the-kinematic-bicycle-model/)
-    to propagate the simulated car in 2D space. 
+    to propagate the simulated car in 2D space.
     After each propagation step velocity and acceleration componets are calculated.
 
     Example:
@@ -34,13 +34,13 @@ class SimulatedCar:
 
     def __init__(
         self,
-        max_acceleration=6.0,  # m/s^2
+        max_acceleration=6.0,   # m/s^2
         max_deceleration=10.0,  # m/s^2
-        max_speed=60.0,  # m/s
-        drag_coef=0.0,  # 1/s
-        simulation_step=1e-3,  # s
-        car_len=2.0,  # m
-        lr=1.0,  # m, distance between rear axle and center or mass
+        max_speed=60.0,         # m/s
+        drag_coef=0.0,          # 1/s
+        simulation_step=1e-3,   # s
+        car_len=2.0,            # m
+        lr=1.0,                 # m, distance between rear axle and COG
     ):
 
         # simulation constants
@@ -57,23 +57,23 @@ class SimulatedCar:
         self._control_pos = 0.0  # dimensionless [-1, 1]
 
         # internal car state
-        self._simul_time = 0.0  # s
-        self._sys_timestamp = monotonic()  # s
-        self._heading_angle = 0.0  # radians
-        self._x_pos = 0.0  # m
-        self._y_pos = 0.0  # m
-        self._v_x = 0.0  # m/s
-        self._v_y = 0.0  # m/s
-        self._speed = 0.0  # m/s
-        self._accel_x = 0.0  # m/s^2
-        self._accel_y = 0.0  # m/s^2
+        self._simul_time = 0.0              # s
+        self._sys_timestamp = monotonic()   # s
+        self._heading_angle = 0.0           # radians
+        self._x_pos = 0.0                   # m
+        self._y_pos = 0.0                   # m
+        self._v_x = 0.0                     # m/s
+        self._v_y = 0.0                     # m/s
+        self._speed = 0.0                   # m/s
+        self._accel_x = 0.0                 # m/s^2
+        self._accel_y = 0.0                 # m/s^2
 
         # these two are needed in order to calculate the components of
         # the acceleration at the end of the update cycle
         self._old_v_x = self._v_x
         self._old_v_y = self._v_y
 
-    # Setup proper r/w access to the interal state,
+    # Setup r/w access to the interal state,
     # returning vector quantities as (x,y) tuples
     # and scalars as a single value
     @property
@@ -140,15 +140,15 @@ class SimulatedCar:
         return math.sqrt(self._accel_x**2 + self._accel_y**2)
 
     def acc_from_ctrl(self):
-        """Gas and brake are combined in a single variable 
+        """Gas and brake are combined in a single variable
         "control position" that can take any value in the interval [-1,1].
-        An implicit assumption here is that you cannot press the gas 
+        An implicit assumption here is that you cannot press the gas
         and the brake at the same time.
         Where ctrl_position  > 0 implies acceleration and
-        ctrl_position < 0 implies braking. 
-        A pieciewise linear relation betwen the ctrl_position and the 
-        "signed norm" of the acceleration 
-        (> 0 - acceleration, < 0 - braking) 
+        ctrl_position < 0 implies braking.
+        A pieciewise linear relation betwen the ctrl_position and the
+        "signed norm" of the acceleration
+        (> 0 - acceleration, < 0 - braking)
         is constructed based on the values
         for max_acceleration and max_decleration provided at initialization.
 
@@ -205,19 +205,15 @@ class SimulatedCar:
         self._x_pos = self._x_pos + self._v_x * self._simulation_step
         self._y_pos = self._y_pos + self._v_y * self._simulation_step
 
-    # These acceleration components (and the vector norm) would as if they were
-    # measured by an accelerometer attached to the car. This has consequences
-    # to the value (it can be higher than pre-defined max) when going around corners
-    # this can be viewed as a weakness of the model because in reality at high
-    # accelerations slip might occur
     def _update_acceleration(self):
+        # Acceleration as measured by an internal car acclerometer
         self._accel_x = (self._v_x - self._old_v_x) / (self._simulation_step)
         self._accel_y = (self._v_y - self._old_v_y) / (self._simulation_step)
 
     def update_car(self):
         # the order of the updates here is important,
-        #  it should be:
-        #  simul time -> speed -> heading -> velocity -> position -> acceleration -> sys timestamp
+        # it should be:
+        # simul time -> speed -> heading -> velocity -> position -> acceleration -> sys timestamp
         self._simul_time = self._simul_time + self._simulation_step
         self._update_speed()
         self._update_heading_angle()
